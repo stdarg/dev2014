@@ -1,0 +1,7 @@
+---
+- hosts: test1
+  tasks:
+    - name: Update cache and do self-upgrade
+      apt: update_cache=yes upgrade=yes
+    - name: Perform a dist-upgrade
+      apt: update_cache=yes upgrade=dist

@@ -1,0 +1,22 @@
+# Installs PHP, MySQL, and FPM.
+---
+- hosts: test1
+  tasks:
+    ##
+    # Apt package installation for mongodb
+    #
+    - name: Install required packages.
+      action: apt pkg={{ item }} state=installed
+      with_items:
+        - sysv-rc-conf
+        - mongodb
+      notify:
+        - Start MongoDB
+        - Set MongoDB to start on boot
+
+  handlers:
+    - name: Start MongoDB
+      service: name=mongod state=started
+    - name: Set MongoDB to start on boot
+      shell: sysv-rc-conf mongod on
+

@@ -1,0 +1,43 @@
+# Installs Node.js, npm, git, mocha, and Jenkins.
+---
+- hosts: test1
+  tasks:
+    ############
+    ## Apt package installation of require packages
+    - name: Install required packages.
+      apt: pkg={{ item }} state=installed
+      with_items:
+      - git
+      - nodejs
+      - npm
+
+    ############
+    ## create symlink for nodejs to be node
+    - name: Rename nodejs to be node
+      shell: cp /usr/bin/nodejs /usr/bin/node
+
+    ############
+    ## steps to Install Jenkins
+    - name: Install python-pycurl (for Jenkins)
+      apt: pkg=python-pycurl state=present
+
+    - name: Get the apt key for Jenkins repository
+      apt_key: url=http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key state=present
+
+    - name: Add Jenkins apt repository
+      apt_repository: repo='deb http://pkg.jenkins-ci.org/debian binary/' state=present
+
+    - name: Add python apt repository for Jenkins
+      apt_repository: repo=ppa:fkrull/deadsnakes state=present
+
+    - name: Update repo and install jenkins
+      apt: pkg=jenkins update_cache=yes
+
+    ############
+    ## install some useful config files
+    - name: Copy some useful dot files
+      copy: src=./DotFiles.tgz dest=/root owner=root
+    - name: Unpack useful dot files
+      shell: tar xfz ./DotFiles.tgz chdir=/root
+    - name: Remove tgz file
+      shell: rm /root/DotFiles.tgz
